@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/stylesheets/stylesheet.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/atelier-lakeside-dark.min.css"/>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<title>HERE Workshop</title>
+<link rel="shortcut icon" type="image/png" href="img/HERE_Favicon.png">
+</head>
+<body>
+<header>
+    <img src="img/HERE_Logo.png" alt="HERE Logo" class="logo" width="80">
+    <h1 class="title">Food Delivery with HERE</h1>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle"> 
+    <nav>
+        <ul>
+            <li><a href="#start-page">Start</a></li>
+            <li><a href="#step-1">Step 1</a></li>
+            <li><a href="#step-2">Step 2</a></li>
+            <li><a href="#step-3">Step 3</a></li>
+            <li><a href="#step-4">Step 4</a></li>
+            <li><a href="#step-5">Step 5</a></li>
+        </ul>
+    </nav>
+    <label for="nav-toggle" class="nav-toggle-label">
+        <span></span>
+    </label>
+</header>
+<div class="content">
+    <p class="adjuster"></p>
+    <section id="start-page">
+        <h2>Scope</h2>
+        <p>In this workshop we will learn to use the JavaScript APIs from the HERE Location Suite.
+            <ol>
+                <li>We render a map and place a marker on our current position with a custom image</li>
+                <li>We search for all take-out restaurants around us and place markers on them</li>
+                <li>We will find and draw a route from one of the restaurants</li>
+                <li>We will display instructions to follow the route.</li>
+                <li>Final code with visual customizations.</li>
+            </ol>
+        </p>
+        <h2>Get Credentials</h2>
+        <p>To access any of the APIs, first get your credentials by signing up for a <a href="https://developer.here.com/events/community-france">freemium account</a>.</p>
+        <h2>Generate apikeys</h2>
+        <p>
+            <iframe width="100%" height="500" src="https://www.youtube.com/embed/WSmSMNbW1v4?start=31" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </p>
+        <h2>Join our Slack</h2>
+        <p><a href="http://t.her.is/slack"><img src="/img/slack.png" alt="slack_logo" width="50px"></a> During the workshop, if you have any questions, please drop them on our Slack channel <strong>weu-workshop</strong></p>
+        <h2>Let's begin!</h2>
+    </section>
+    <section id="step-1">
+        <p class="adjuster"></p>
+        <h2>Pre-requisites</h2>
+        <p><img src="/img/VSCode.png" alt="vscode logo" width="25"> Download the ide <a href="https://code.visualstudio.com/download">VSCODE</a><br/>
+        Install the extension Live Server by Ritwick Dey.<br/>
+        This makes it super easy to see your application on your browser.<br/>
+        <img src="img/live_server.png" alt="Live Server Extension" width="80%" ></p>
+        <h3>Create a folder named Workshop_HERE</h3>
+        <ul>
+        <li>In VSCODE click on File &gt; Open..</li>
+        <li>Open the folder Workshop_HERE</li>
+        <li>Click on File &gt; New File and save it as 'index.html' within the folder</li>
+        </ul>
+        <h2>Base Code</h2>
+        <p>Copy the code below in the file 'index.html'</p>
+        <pre>
+            <code class="html">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;HERE Logistics Workshop&lt;/title&gt;
+        &lt;!-- SCRIPTS --&gt;
+        &lt;meta name=&quot;viewport&quot; charset=&quot;UTF-8&quot; content=&quot;initial-scale=1.0, width=device-width&quot; /&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;https://js.api.here.com/v3/3.1/mapsjs-core.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;https://js.api.here.com/v3/3.1/mapsjs-service.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;https://js.api.here.com/v3/3.1/mapsjs-ui.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;https://js.api.here.com/v3/3.1/mapsjs-mapevents.js&quot;&gt;&lt;/script&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://js.api.here.com/v3/3.1/mapsjs-ui.css&quot;/&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1 style=&quot;text-align: center;&quot;&gt;Food Delivery with HERE&lt;/h1&gt;
+        &lt;div id=&quot;mapContainer&quot; style=&quot;width: 80vw; height: 50vh; background: #39B6B3; display: block; margin: 0 auto; border: solid 2px black; margin-top: 100px;&quot; &gt; &lt;/div&gt;
+        &lt;div style=&quot;width: 100vw; height: 40px; margin-top: 30px;&quot;&gt;
+            &lt;input type=&quot;button&quot; onclick=&quot;showDeliveryRest()&quot; value = &quot;Show Restaurants&quot; style=&quot;width: 200px; height: 30px; border: 2px solid black; display: block; margin: 0 auto; margin-top: 20px;&quot;&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;panel&quot; style=&quot;width: 30vw; background: #39B6B3; color: white; margin-top: 20px;display: block; margin: 0 auto;&quot;&gt;&lt;/div&gt;
+        
+    &lt;/body&gt;
+    &lt;script&gt;
+        var platform = new H.service.Platform({
+            apikey: &quot;YOUR_JS_API_KEY&quot;   
+        });
+
+        // Obtain the default map types from the platform object:
+
+        var defaultLayers = platform.createDefaultLayers();
+
+        // Get your current position from wego.here.com
+        
+        var myPosition = {lat: 52.53007, lng: 13.38526};
+
+        // Instantiate (and display) a map object:
+
+        var map = new H.Map(
+            document.getElementById('mapContainer'),
+            defaultLayers.vector.normal.map,
+            {
+                zoom: 11,
+                center: myPosition
+            });
+
+        var ui = H.ui.UI.createDefault(map, defaultLayers, 'en-US');
+
+        var mapEvents = new H.mapevents.MapEvents(map);
+
+        var behavior = new H.mapevents.Behavior(mapEvents);
+
+        // Get an instance of the routing service for using the routing API
+
+        var router = platform.getRoutingService();
+
+        // Get an instance of the geocoding and search service:
+
+        var service = platform.getSearchService();
+    &lt;/script&gt;
+&lt;/html&gt;
+            </code>
+        </pre>
+        <h2>Changing the language of the map</h2>
+        <ul>
+            <li>To change the language, change the 'en-US' to the language code you want:</li>
+            <li>en-US – English (United States)</li>
+            <li>de-DE – German</li>
+            <li>es-ES – Spanish</li>
+            <li>fi-FI – Finnish</li>
+            <li>fr-FR – French</li>
+            <li>it-IT – Italian</li>
+            <li>nl-NL – Dutch</li>
+            <li>pl-PL – Polish</li>
+            <li>pt-BR – Portuguese (Brazil)</li>
+            <li>pt-PT – Portuguese (Portugal)</li>
+            <li>ru-RU – Russian</li>
+            <li>tr-TR – Turkish</li>
+            <li>zh-CN – Chinese (China)</li>
+            </ul>
+            <h2>Adding a position marker using map object of Interactive maps API</h2>
+            <ul>
+            <li>Add a folder named img inside the folder Food_Delivery_With_HERE</li>
+            <li>Inside the folder img, save the image you want as the icon for restaurants and home</li>
+            <li>Choose any image you want. I created mine using draw.io </li>
+            <li>You can also download the ones I used: <a href="img/home.png"><img src="img/home.png" alt="home icon"></a> and <a href="img/takeout.png"><img src="img/takeout.png" alt="restaurant icon"></a></li>
+            <li>Add the following code before &lt;/script&gt; tag</li>
+        </ul>
+        <pre><code class="javascript">            
+        // create an icon for the marker. 
+            
+        var homeIcon = new H.map.Icon('img/home.png'); 
+
+        var posMarker = new H.map.Marker(myPosition,{icon:homeIcon});
+            
+        // Add the marker to the map 
+
+        map.addObject(posMarker);
+        </code></pre>
+        <h2>Go Live</h2>
+        <p>Click on the 'Go Live' button on the bottom right of your VSCODE application window and see your application open in your default browser.<br/>
+        Alternatively <strong>right click</strong> on your code window and click on 'Open with Live Server'.  </p>
+    </section>
+<section id="step-2">
+    <h2>Search for Restaurants</h2>
+    <p>Display Take-out restaurants around you using the Geocoder and Search REST API.<br/>Add the following code before &lt;/script&gt; tag</p>
+    <pre><code class="javascript">           
+        function showDeliveryRest(){
+
+            let param = {
+                at : myPosition.lat+','+myPosition.lng,
+                q: &quot;restaurant&quot;,
+                categories: &quot;100-1000-0003&quot;, // category Take Out and Delivery Only ,
+                // for more, got to https://developer.here.com/documentation/geocoding-search-api/dev_guide/topics-places/places-category-system-full.html
+                limit:100
+            }; 
+
+            service.browse(param,displayRestaurants,alert);
+        }
+    </code></pre>
+    <h2>Markers</h2>
+    <p>Lets add nice markers to display these restaurants.<br/>Add the following code before &lt;/script&gt; tag</p>
+    <pre><code class="javascript">        
+        
+        function displayRestaurants(response){
+    
+        var takeOutIcon = new H.map.Icon('img/takeout.png');
+
+        var restGroup = new H.map.Group();
+
+        for(let i = 0; i&lt;response.items.length; i++){
+            let restPosition = response.items[i].position; 
+          
+            let data = response.items[i].title;
+          
+            let restMarker = new H.map.Marker(restPosition,{icon: takeOutIcon} );
+
+            restGroup.addObject(restMarker);
+        }
+
+        map.addObject(restGroup);
+    }
+
+    </code></pre>
+</section>
+<section id="step-3">
+    <h2>Select the Restaurant number 5 in the list for delivery</h2>
+    <ul>
+    <li>The numbering here is from 0 to 99 so the 5th restaurant will be number 4</li>
+    </ul>
+    <h3>Add the following code after <code>map.addObject(restGroup);</code> within the '}' in the previous step</h3>
+    <pre><code class="javascript">    
+        
+        let deliveryRestPosition = response.items[4].position;
+        showRoute(deliveryRestPosition);
+    
+    </code></pre>
+    <h2>Get a Route</h2>
+    <p>Get Route from the selected restaurant to your home with a car.<br/>Add the following code before &lt;/script&gt; tag</p>
+    <pre><code class="javascript">       
+        
+        function showRoute(restPos){
+            // console.log(restPos);
+
+            let routingParameters = {
+                // The routing mode:
+                mode: 'fastest;car;traffic:enabled',
+                // The start point of the route:
+                waypoint0: restPos.lat+','+restPos.lng ,
+                // The end point of the route:
+                waypoint1: myPosition.lat+','+myPosition.lng,
+                // To retrieve the shape of the route we choose the route
+                // representation mode 'display'
+                representation: 'display',
+
+                routeattributes : 'summary,shape',
+
+                language: &quot;en-US&quot;
+
+                };
+
+            router.calculateRoute(routingParameters, onResult,
+                function(error) {
+                    alert(error.message);
+            });    
+        }
+    
+    </code></pre>
+    <h2>Draw Route</h2>
+    <p>Draw the route received form the Routing API using a <strong>Polyline</strong><br/>Add the following code before &lt;/script&gt; tag</p>
+    <pre><code class="javascript">        
+        
+    // Define a callback function to process the routing response:
+        var onResult = function(result) {
+            var route,
+                routeShape,
+                startPoint,
+                endPoint,
+                linestring;
+            if(result.response.route) {
+                // Pick the first route from the response:
+                let route = result.response.route[0];
+                // Pick the route's shape:
+                routeShape = route.shape;
+
+                // Create a linestring to use as a point source for the route line
+                linestring = new H.geo.LineString();
+
+                // Push all the points in the shape into the linestring:
+                routeShape.forEach(function(point) {
+                    var parts = point.split(',');
+                    linestring.pushLatLngAlt(parts[0], parts[1]);
+                });
+
+                // Create a polyline to display the route:
+                var routeLine = new H.map.Polyline(linestring, {
+                    style: { strokeColor: 'RGB(116, 66, 200)', lineWidth: 7 }
+                });
+                // Add the route polyline and the two markers to the map:
+                map.addObject(routeLine);
+                
+                // Set the map's viewport to make the whole route visible:
+                map.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});
+            }
+        };
+                
+    </code></pre>
+</section>
+<section id="step-4">
+    <h2>Driving Instructions</h2>
+    <p>Select instructions from the route to be displayed.<br/>
+    Add the following code before <strong>map.getViewModel().setLookAtData({bounds: routeLine.getBoundingBox()});</strong>
+    </p>
+    <pre><code class="language-javascript">
+
+                let maneuver = route.leg[0].maneuver;
+                let summary = route.summary;
+                displayInstructions(maneuver,summary);
+
+    </code></pre>
+    <h2>Display Instructions</h2>
+    <p>Display these instructions in the &quot;panel&quot;<br/>
+    Copy the following code above the &lt;/script&gt; tag</p>
+   
+    <pre><code class="javascript">
+        Number.prototype.toMMSS = function () {
+            return  Math.floor(this / 60)  +' minutes '+ (this % 60)  + ' seconds.';
+        }
+
+        function displayInstructions(maneuver,summary){
+
+            var totalTravelTime = 0;
+            
+            for(let i=0; i&lt; maneuver.length; i++){
+
+                instructions = maneuver[i].instruction;
+                // console.log(instructions)
+                document.getElementById(&quot;panel&quot;).innerHTML+= ( i+1) + ') '+instructions +  `&lt;br&gt;`;
+
+            }
+
+            document.getElementById(&quot;panel&quot;).innerHTML+=&quot;Total distance : &quot; + (summary.distance) + ' m' ;
+
+            document.getElementById(&quot;panel&quot;).innerHTML+=&quot;Estimated time : &quot; + summary.travelTime.toMMSS();
+        }
+    </code></pre>
+</section>
+<section id="step-5">
+    <h2>Final Result</h2>
+        <iframe src="https://kuberaspeaking.github.io/FoodDeliveryWithHERE/" title="final product" width="100%" height="80%"></iframe>
+        <h2>Final Code</h2>
+            <p>Check <a href="/index.html">final code</a> with modifications</p>
+            <h2>Contact Us</h2>
+            <p><a href="https://twitter.com/heredev"><img src="/img/twitter.png" alt="Foo"></a>
+            <a href="http://t.her.is/slack"><img src="/img/slack.png" alt="Foo"></a>
+            <a href="https://stackoverflow.com/questions/tagged/here-api"><img src="/img/stackoverflow.png" alt="Foo"></a>
+            <a href="https://github.com/heremaps"><img src="/img/github.png" alt="Foo"></a></p>
+            <h2>Watch live webinars and videos</h2>
+            <p><a href="https://www.twitch.tv/heredev"><img src="/img/twitch.png" alt="Foo"></a>
+            <a href="https://www.youtube.com/heremaps"><img src="/img/youtube.png" alt="Foo"></a></p>
+            <h2>Developer Tutorials and Blogs</h2>
+            <p><a href="https://developer.here.com/blog">Developer Blog</a>
+            </br>
+            <a href="https://developer.here.com/tutorials">Developer Tutorials</a></p>
+</section>
+</div>
+</body>	
+<script type="text/javascript" src="js/config.js"></script>
+</html>
